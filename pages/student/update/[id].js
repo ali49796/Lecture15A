@@ -1,6 +1,6 @@
 import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react'
-import { db } from '../../../firebase';
+import { database, db } from '../../../firebase';
 import {useRouter} from 'next/router'
 
 function UpdateStudent() {
@@ -14,32 +14,28 @@ function UpdateStudent() {
   const studentId = router.query.id;
   
   
-
   useEffect(() => {
-    if(studentId){
-      getData() 
-    }
-  }, [studentId])
+    getData();
+  }, [])
   
   const getData = async () => {
-    await getDoc(doc(db, "Students", studentId))
+    await getDoc(doc(database, "students", studentId))
     .then((response) => {
       setName(response.data().name)
       setMarks(response.data().marks)
     })
   }
 
-  const updateData = (e) => {
+  const updateData = async (e) => {
     e.preventDefault();
     
-    updateDoc(doc(db, "Students", studentId), {
+    let fieldToEdit = doc(database, 'students', studentId);
+    await updateDoc(fieldToEdit, {
       name: name,
       marks: marks
     })
     .then(() => {
-      alert('Data Updated');
-      setName('');
-      setMarks("");
+      alert('Data Updated')
     })
     .catch((err) => {
       console.log(err);
